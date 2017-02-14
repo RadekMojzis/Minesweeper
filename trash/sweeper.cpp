@@ -5,8 +5,7 @@
 #include <stdio.h>
 
 #include "timer.h"
-#include "sdl_must.h"
-
+#include "tile.h"
 
 SDL_Window  *screen = NULL;
 SDL_Surface *background = NULL;
@@ -20,22 +19,8 @@ SDL_Surface *scoreboard = NULL;
 
 SDL_Event event;
 
-bool generated = false;  //the minefield generates after you click on the field so... this is for that
-int gameover = 0;        //win or lose... game ends
-
 const int FRAMES_PER_SECOND = 50; //framerate... if you dont capp it... shit happens 25% cpu gone :D
 
-int minemax = 99;  //number of mines
-int size_x = 30; //size of the field
-int size_y = 15;
-
-int flagcounter = minemax;  //this is the counter of mines-number of flags...
-
-//Window properities
-int SCREEN_WIDTH = 1200;
-int SCREEN_HEIGHT = 670;
-const int SCREEN_BPP = 32;
-//constants used to cut the picture in pieces...
 const int M_HOVER = 0;
 const int M_OUT = 1;
 const int M_DOWN = 2;
@@ -74,151 +59,7 @@ SDL_Rect clips[26] = {
   {200, 100 , 50, 50}, //8
   {250, 100 , 50, 50}, //9
   {300, 100 , 50, 50} //:
-
 };
-
-
-//ye the mine field is a 2D array of these
-class button{
-    private:
-      SDL_Rect box;
-      SDL_Rect* clip;
-      int minecount;
-      bool mine;
-      int state;
-      bool revealed;
-      bool flag;
-      bool gen;
-    public:
-      button();
-      void reveal();
-      void show();
-
-      void plantmine();
-      void addmine();
-      void changeflag();
-      void changestate(int newstate);
-      void setbutton(int x, int y, int w, int h);
-      void setgen();
-
-      int getminecount();
-
-      bool isavaileable();
-      bool ismine();
-      bool isrevealed();
-      bool isflag();
-};
-
-
-void reveal_near(button **field);
-
-bool button::isflag(){
-  return flag;
-}
-
-bool button::isrevealed(){
-  return revealed;
-}
-
-int button::getminecount(){
-  return minecount;
-}
-
-bool button::isavaileable(){
-  return !gen;
-}
-
-void button::setgen(){
-  gen = true;
-}
-
-void button::changeflag(){
-  if(revealed)
-    return;
-  flag = flag ? false : true;
-  clip = flag? &clips[12] : &clips[M_HOVER];
-  show();
-}
-
-void button::reveal(){
-  if(revealed)
-    return;
-  if(flag)
-    return;
-  revealed = true;
-  if(mine){
-    clip = &clips[3];
-    revealed = true;
-    show();
-    gameover = 1;  //endgame mechanics
-
-    return;
-  }
-  clip = minecount ? &clips[minecount+3] : &clips[M_DOWN];
-  show();
-}
-
-button::button(){
-  box.x = 0;  //offset
-  box.y = 0;
-  box.w = 0;  //size
-  box.h = 0;
-  mine = false;
-  flag = false;
-  revealed = false;
-  minecount = 0;
-  gen = false;
-  clip = &clips[M_OUT]; //clip
-}
-
-void button::setbutton(int x, int y, int w, int h){  //instead of constructor... because... one does not simply inicialise a 2D array of objects with creator..
-  box.x = x;  //offset
-  box.y = y;
-  box.w = w;  //size
-  box.h = h;
-}
-
-void button::plantmine(){
-  mine = true;
-}
-
-bool button::ismine(){
-  return mine;
-}
-
-void button::addmine(){
-  minecount++;
-}
-
-void button::show(){
-  apply_surface( box.x, box.y, buttonClip, screen, clip);
-}
-
-void button::changestate(int newstate){
-  if(revealed)
-    return;
-  if(flag){
-    if(newstate == M_HOVER){
-      clip = &clips[12];
-      show();
-    }
-    if(newstate == M_DOWN){
-      clip = &clips[13];
-      show();
-    }
-    if(newstate == M_OUT){
-      clip = &clips[13];
-      show();
-    }
-    if(newstate == M_FALSE){
-      clip = &clips[M_FALSE];
-      show();
-    }
-    return;
-  }
-  clip = &clips[newstate];
-  show();
-}
 
 button *last_active = NULL;  // THIS SUCKER IS HIDDEN - stores the last active (the button mouse have been before the current active)
 
@@ -240,7 +81,6 @@ int init(){ //inicializes SDL stuff
   if((screen = SDL_CreateWindow("Minesweeper 3.0 by mozes", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                           SCREEN_WIDTH, SCREEN_HEIGHT,
                           SDL_WINDOW_OPENGL)) == NULL){
-    
     return 1;
   }
     
@@ -693,11 +533,8 @@ int main(int argc, char *argv[]){
   if(init() || load())
     return 1;
   Timer fps;
-  apply_surface(0, 0, background, screen);
-  apply_surface( 50, 0, counter, screen );
-  apply_surface( SCREEN_WIDTH/3*2, 0, clockimg, screen );
-
-  button **field = new button*[size_x];
+	
+  tile **field = new button*[size_x];
   for(int i = 0; i < size_x; i++)
     field[i] = new button[size_y];
 
@@ -707,50 +544,30 @@ int main(int argc, char *argv[]){
 
   for(int i = 0; i < size_x; i++)
     for(int j = 0; j < size_y; j++)
-      field[i][j].show();
+      field[i][j].render();
 
-  bool quitflag = false;
-  int flagcountercmp = minemax;
-  flagcounter = minemax;
-  makenumber(flagcounter, SCREEN_WIDTH/20+320, 0);
-  maketime(gametime.get_ticks()/1000 , SCREEN_WIDTH/3*2+50, 0);
-
-  while(quitflag == false){
+  
+  while(1){
     fps.start();
-    maketime(gametime.get_ticks()/1000 , SCREEN_WIDTH/3*2+50, 0);
-    if(gameover == 1){
-      boom(field);
-      break;
-    }
-    if(gameover == 2){
-      victory();
-      break;
-    }
     if(SDL_PollEvent( &event )){
       if(event.type == SDL_QUIT){
-        quitflag = true;
-        gameover = 1;
+				break;
       }
       handle_events(field);
     }
-    if(flagcountercmp != flagcounter){
-      flagcountercmp = flagcounter;
-      makenumber(flagcounter, SCREEN_WIDTH/20 + 320, 0);
-    }
-    SDL_Flip(screen);
+    
+		
     if(( fps.get_ticks() < 1000 / FRAMES_PER_SECOND )){
       SDL_Delay( ( 1000 / FRAMES_PER_SECOND ) - fps.get_ticks() );
     }
   }
 
   FILE *fa = fopen("records", "a");
-  fprintf(fa, "%i %i %i %i \n", minemax, size_x, size_y, (gameover == 2) ? gametime.get_ticks()/1000 : 0);
-  fclose(fa);
-
-  gametime.stop();
+  
   for(int i = 0; i < size_x; i++)
     delete [] field[i];
   delete [] field;
   clean_up();
-  return 0;
+  
+	return 0;
 }
