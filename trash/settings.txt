@@ -1,0 +1,45 @@
+90
+30
+16
+^^ THESE NUMBERS ARE THE GAME SETTINGS, changing them and SAVING the document will change the game settings.
+In order those numbers are
+MINECOUNT
+X SIZE OF THE FIELD (number of colmuns)
+Y SIZE OF THE FIELD (number of rows)
+
+please note that if you have resolution of 1366*768 and you have your taskbar on the bottom of the screen
+the maximum size of the field that can fit on your screen is 33*17, for FULL-HD (1920*1080) the maximum is 50*25.
+the maximum amount of mines you can fit on the borard is about size_x*size_y - 9.
+Sometimes, however, when you use numbers close to the max amount of mines the generating will get stuck.
+
+suggested settings
+
+basic settings - begginer  (dont know why this even exists)
+10
+9
+9
+
+basic settings - intermediate
+40
+16
+16
+
+basic settings - advanced (my favorite on hd screen)
+90
+30
+16
+
+basic settings - advanced big
+230
+50
+25
+
+basic settings - expert big (my favorite on full hd)
+240
+50
+25
+
+basic settings - expert (those 9 mines will really mess it up for you.. most of the times, this cant be solved without guessing)
+99
+30
+16
