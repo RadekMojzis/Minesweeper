@@ -23,6 +23,9 @@ SDL_Event event;
 class button{
   private:
     SDL_Rect position;
+		int displace_x;
+		int displace_y;
+		
     SDL_Rect original_clip;
     SDL_Rect current_clip;
     
@@ -30,11 +33,39 @@ class button{
     int (*f_ptr)();
     
   public:
+	  void handle_mouse();
     void adjust_position();
     void render();
     void changestate(int newstate);
-    button(SDL_Rect poss, SDL_Rect clip, int (*foo)() );
+    button(SDL_Rect position, SDL_Rect clip, int (*foo)() );
 };
+
+void button::handle_mouse(){
+	switch (event.type)  {
+    case SDL_MOUSEBUTTONDOWN: {
+			if(event.motion.x >= position.x && event.motion.x <= position.x + position.w
+			&& event.motion.y >= position.y && event.motion.y <= position.y + position.h)
+			  changestate(M_DOWN);
+			else{changestate(M_OUT);}
+			break;
+		}
+    case SDL_MOUSEMOTION: {
+			if(event.motion.x >= position.x && event.motion.x <= position.x + position.w
+			&& event.motion.y >= position.y && event.motion.y <= position.y + position.h)
+			  changestate(M_HOVER);
+			else{changestate(M_OUT);}
+			break;
+		}
+    case SDL_MOUSEBUTTONUP: {
+			if(event.motion.x >= position.x && event.motion.x <= position.x + position.w
+			&& event.motion.y >= position.y && event.motion.y <= position.y + position.h)
+				f_ptr();
+			else{changestate(M_OUT);}
+			break;
+		}
+
+  }
+}
 
 button* existing_buttons[10000];
 int buttoncount = 0;
@@ -49,7 +80,7 @@ void button::changestate(int newstate){
     render();
   }
   if(newstate == M_DOWN){  
-    current_clip.x = original_clip.x;
+    current_clip.x = original_clip.x +600;
     render();
   }
   if(newstate == M_OUT){
@@ -60,7 +91,9 @@ void button::changestate(int newstate){
 
 button::button(SDL_Rect poss, SDL_Rect clip, int (*foo)() ){
   existing_buttons[buttoncount++] = this;
-  position = poss;  
+  position = poss;
+  displace_x = position.x;
+  displace_y = position.y;  
   adjust_position();
   
   original_clip = clip;
@@ -71,10 +104,9 @@ button::button(SDL_Rect poss, SDL_Rect clip, int (*foo)() ){
 }
 
 void button::adjust_position(){
-  int displace_x = position.x;
-  int displace_y = position.y;
   position.x = SCREEN_WIDTH/2-position.w/2 + displace_x;
   position.y = SCREEN_HEIGHT/2-position.h/2 + displace_y;
+	render();
 }
 
 //Function declarations
@@ -84,7 +116,7 @@ void deinit();
 bool load_menu();
 void display_menu();
 bool load_game();
-void handle_events();
+void menu_handle_events();
 int new_game();
 int options();
 int records();
@@ -127,13 +159,11 @@ bool load_menu(){
 void display_menu(){
 	SDL_SetRenderDrawColor( main_renderer, 0xF0, 0xF0, 0xF0, 0xFF );
 	SDL_RenderClear( main_renderer );
-  
-  button NEW_GAME_BTN({0, -150, 150, 50},{0,0,300,100}, &new_game );
-  button RECORDS_BTN({0, -75, 150, 50},{0,100,300,100}, &records );
+  int spacing = 75;
+  button NEW_GAME_BTN({0, 2*spacing, 150, 50},{0,0,300,100}, &new_game );
+  button RECORDS_BTN({0, spacing, 150, 50},{0,100,300,100}, &records );
   button OPTIONS_BTN({0, 0, 150, 50},{0,200,300,100}, &options );
-  button QUIT_BTN({0, 75, 150, 50},{0,300,300,100}, &quit );
-  
-  
+  button QUIT_BTN({0, -spacing, 150, 50},{0,300,300,100}, &quit );  
   
   bool die = false;
   while( !die ){
@@ -141,7 +171,7 @@ void display_menu(){
 			if( event.type == SDL_QUIT ){
 				die = true;
 			}
-      handle_events();
+      menu_handle_events();
 	  }
 		SDL_RenderPresent( main_renderer );
 		SDL_Delay(20);
@@ -171,14 +201,15 @@ int quit(){
   return 0;
 }
 
-void handle_events(){
+void menu_handle_events(){
   switch (event.type)  {
     case SDL_WINDOWEVENT:  {
       switch (event.window.event)  {
         case SDL_WINDOWEVENT_SIZE_CHANGED:  {
           SCREEN_WIDTH = event.window.data1;
           SCREEN_HEIGHT = event.window.data2;
-          for(int i = buttoncount; i <= 0; i--){
+					SDL_RenderClear( main_renderer );
+          for(int i = buttoncount-1; i >= 0; i--){
             existing_buttons[i]->adjust_position();
           }
           break;
@@ -186,11 +217,23 @@ void handle_events(){
       }
       break;
     }
-    case SDL_MOUSEBUTTONDOWN: {break;}
-    case SDL_MOUSEMOTION: {break;}
-    case SDL_MOUSEBUTTONUP: {break;}
-
+    case SDL_MOUSEBUTTONDOWN: {
+			for(int i = buttoncount-1; i >= 0; i--){
+        existing_buttons[i]->handle_mouse();
+		  }
+		}
+    case SDL_MOUSEMOTION: {
+			for(int i = buttoncount-1; i >= 0; i--){
+        existing_buttons[i]->handle_mouse();
+		  }
+			break;
+		}
+    case SDL_MOUSEBUTTONUP: {
+			for(int i = buttoncount-1; i >= 0; i--){
+        existing_buttons[i]->handle_mouse();
+		  }
+			break;
+		}
   }
-  
 }
 
