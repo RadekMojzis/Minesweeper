@@ -5,8 +5,8 @@
 
 using namespace std;
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_WIDTH = 1400;
+const int SCREEN_HEIGHT = 1000;
 
 SDL_Window* window = NULL;
 SDL_Renderer* main_renderer = NULL;
@@ -19,7 +19,7 @@ int init(){
 	if(SDL_Init( SDL_INIT_VIDEO ) < 0)
 		return 1;
 	
-	window = SDL_CreateWindow( "Minesweeper", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0 );
+	window = SDL_CreateWindow( "Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE );
 	main_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	
 	return 0;
@@ -28,14 +28,14 @@ int init(){
 SDL_Texture* loadTexture( std::string path ){
 	SDL_Texture* newTexture = SDL_CreateTextureFromSurface( main_renderer, IMG_Load( path.c_str() ));
   if( newTexture == NULL ){
-	  printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
+	  cout << "Unable to create texture from" << path << "! SDL Error:" << SDL_GetError() << "\n";
 	}
 
 	return newTexture;
 }
 
 int load(){
-	bg_texture  = loadTexture("img/bg.bmp");
+	//bg_texture  = loadTexture("img/bg.bmp");
 	
 	button_texture  = loadTexture("texture.bmp");
 
@@ -45,7 +45,7 @@ int load(){
 void deinit(){
 
     SDL_DestroyWindow( window );
-    SDL_DestroyTexture(bg_texture);
+    //SDL_DestroyTexture(bg_texture);
 		SDL_DestroyTexture(button_texture);
     SDL_DestroyRenderer(main_renderer);
     SDL_Quit();
@@ -72,19 +72,19 @@ int main(int argc, char* args[]){
 	clip2.w = 150;
 	clip2.h = 50;
 	
-	dst1.x = SCREEN_WIDTH/2-75;
+	dst1.x = SCREEN_WIDTH/2-150;
 	dst1.y = SCREEN_HEIGHT/2-75;
-	dst1.w = 150;
+	dst1.w = 300;
 	dst1.h = 50;
 	
-	dst2.x = SCREEN_WIDTH/2-75;
+	dst2.x = SCREEN_WIDTH/2-150;
 	dst2.y = SCREEN_HEIGHT/2+25;
-	dst2.w = 150;
+	dst2.w = 300;
 	dst2.h = 50;
 	
-	SDL_SetRenderDrawColor( main_renderer, 0xFF, 0xFF, 0xFF, 0xFF );
+	SDL_SetRenderDrawColor( main_renderer, 0xA2, 0xf4, 0xf1, 0xFF );
 	SDL_RenderClear( main_renderer );
-	SDL_RenderCopy(main_renderer, bg_texture, NULL, NULL);
+
 	SDL_RenderCopy(main_renderer, button_texture, &clip1, &dst1);
 	SDL_RenderCopy(main_renderer, button_texture, &clip2, &dst2);
 	
