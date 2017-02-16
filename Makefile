@@ -1,4 +1,4 @@
-OBJS = sweeper.cpp
+OBJS = text_input.cpp
 
 #CC specifies which compiler we're using
 CC = g++
@@ -18,7 +18,7 @@ COMPILER_FLAGS = -w -Wl,-subsystem,windows
 LINKER_FLAGS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
 
 #OBJ_NAME specifies the name of our exectuable
-OBJ_NAME = sweeper
+OBJ_NAME = text_input
 
 #This is the target that compiles our executable
 all : $(OBJS)
