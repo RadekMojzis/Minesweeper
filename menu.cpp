@@ -11,19 +11,19 @@ extern int SCREEN_WIDTH;
 extern int SCREEN_HEIGHT;
 extern FILE* out;
 
-SDL_Event event;
 
 bool load_menu();
 int display_menu();
-int menu_handle_events();
-bool skip_menu_flag = false;
+int menu_handle_events(SDL_Event event);
 
 button* existing_buttons[10000];
 int buttoncount = 0;
 SDL_Texture* button_textures = NULL;
 
-int menu(){
-	button_textures  = SDL_CreateTextureFromSurface( main_renderer, IMG_Load("menu.bmp"));
+int menu(int skip){
+	if(skip)
+    return 1;
+  button_textures  = SDL_CreateTextureFromSurface( main_renderer, IMG_Load("menu.bmp"));
   
 	int function_number = display_menu();
   SDL_DestroyTexture(button_textures);
@@ -42,7 +42,8 @@ int display_menu(){
   existing_buttons[buttoncount++] = &OPTIONS_BTN;
   button QUIT_BTN({0, 2*spacing, 150, 50},{0,200,300,100}, 0);  
   existing_buttons[buttoncount++] = &QUIT_BTN;
-  
+  SDL_Event event;
+
   bool die = false;
   while( !die ){
 	  while( SDL_PollEvent( &event ) != 0 ){
@@ -50,7 +51,7 @@ int display_menu(){
 				die = true;
 			}
       int func_number;
-      if((func_number = menu_handle_events()))
+      if((func_number = menu_handle_events(event)))
         return func_number;
 	  }
 		SDL_RenderPresent( main_renderer );
@@ -61,11 +62,12 @@ int display_menu(){
     existing_buttons[i] = NULL;
 	}
   buttoncount = 0;
-  
+
   return 0;
 }
 
-int menu_handle_events(){
+int menu_handle_events(SDL_Event event){
+  
   switch (event.type)  {
     case SDL_WINDOWEVENT:  {
       switch (event.window.event)  {

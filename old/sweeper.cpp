@@ -309,7 +309,7 @@ void generate_field(button **field){
   while( mines < minemax){
     for(int i = 0; i < size_x; i++){
       for(int j = 0; j < size_y; j++){
-        if(((rand() % 250) == 0) && (field[i][j].ismine() == false) && field[i][j].isavaileable()){
+        if(((rand() % 250) == 0) && (field[i][j].mineflag == false) && field[i][j].isavaileable()){
           if(mines == minemax)
             break;
           field[i][j].plantmine();   //every tile has 10% chance to spawn a mine
@@ -552,15 +552,21 @@ void count_flags(button **field){
 }
 
 bool checkwin(button **field){
+  fprintf(out, "Checking board for victory...\n");
   bool winflag = true;
   for(int i = 0; i < size_x; i++){
     for(int j = 0; j < size_y; j++){
-      if(!field[i][j].isrevealed() && !field[i][j].isflag())
+      if(!field[i][j].isrevealed() && !field[i][j].isflag()){
+        fprintf(out, "Tile[%i][%i] Is Wrong...\n", i, j);
         winflag = false;
-      if(field[i][j].isflag() && !field[i][j].ismine())
+      }
+      if(field[i][j].isflag() && !field[i][j].ismine()){
+        fprintf(out, "Tile[%i][%i] Is Wrong...\n", i, j);
         winflag = false;
+      }
     }
   }
+  fprintf(out, "All is fine");
   return winflag;
 }
 // sth like boom... but not as fun :D

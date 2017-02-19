@@ -25,7 +25,17 @@ LINKER_FLAGS = -lmingw32  -lSDL2main -lSDL2 -lopengl32 -lglu32 -lSDL2_image
 
 button.o: button.cpp
 	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $^ -c
+  
+print_number.o: print_number.cpp
+	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $^ -c
 
+timer.o: timer.cpp
+	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $^ -c
+  
+minefield.o: minefield.cpp
+	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $^ -c
+
+  
 sweeper.o: sweeper.cpp
 	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $^ -c
   
@@ -41,8 +51,8 @@ menu.o: menu.cpp
 options.o: options.cpp
 	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $^ -c
 
-sweeper: sweeper.o button.o menu.o records.o game.o options.o
-	$(CC) sweeper.o button.o menu.o records.o game.o options.o $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $@
+sweeper: sweeper.o button.o menu.o records.o game.o options.o minefield.o timer.o print_number.o
+	$(CC) sweeper.o button.o menu.o records.o game.o options.o minefield.o timer.o print_number.o $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $@
   
 clean:
 	del *.o

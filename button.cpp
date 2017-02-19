@@ -12,6 +12,7 @@ extern int SCREEN_HEIGHT;
 extern FILE* out;
 
 int button::handle_mouse(SDL_Event event){
+  
 	switch (event.type)  {
     case SDL_MOUSEBUTTONDOWN: {
 			if(event.motion.x >= position.x && event.motion.x <= position.x + position.w
@@ -21,9 +22,14 @@ int button::handle_mouse(SDL_Event event){
 			break;
 		}
     case SDL_MOUSEMOTION: {
+      
 			if(event.motion.x >= position.x && event.motion.x <= position.x + position.w
-			&& event.motion.y >= position.y && event.motion.y <= position.y + position.h)
-			  changestate(M_HOVER);
+			&& event.motion.y >= position.y && event.motion.y <= position.y + position.h){
+			  if(event.button.button == SDL_BUTTON_LEFT){
+          changestate(M_DOWN);}
+        else{
+          changestate(M_HOVER);}
+      }
 			else{changestate(M_OUT);}
 			break;
 		}
@@ -42,6 +48,9 @@ int button::handle_mouse(SDL_Event event){
 }
 
 void button::render(){
+  //fprintf(out, "rendering {%i, %i, %i, %i} {%i, %i, %i, %i}\n", current_clip.x, current_clip.y, current_clip.w, current_clip.h, position.x, position.y, position.w, position.h);
+  //if(button_textures == NULL)fprintf(out, "NULL\n");
+  //SDL_RenderCopy(main_renderer, button_textures, NULL, NULL);
   SDL_RenderCopy(main_renderer, button_textures, &current_clip, &position);
 }
 
