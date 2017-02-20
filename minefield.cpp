@@ -2,6 +2,8 @@
 
 #include "minefield.h"
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 SDL_Rect mineclip_array[15] = {
     //this part is for the skin.png
@@ -347,6 +349,11 @@ void minefield::reveal_near(int x, int y){
       oracle(x+1, y+1);}
     else{tiles[x+1][y+1].reveal();}
   }
+}
+int minefield::refresh(){
+	for(int i = 0; i < tiles_x; i++)
+		for(int j = 0; j < tiles_y; j++)
+			tiles[i][j].change_state(M_OUT);
 }
 
 int minefield::handle_mouse(SDL_Event event){

@@ -41,6 +41,7 @@ class minefield{
     int n_o_mines;
     
   public:
+	  int refresh();
     Timer gametime;
     void reveal_near(int x, int y);
     void oracle(int x, int y);

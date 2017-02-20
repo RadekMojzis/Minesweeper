@@ -6,7 +6,7 @@
 #include "minefield.h"
 #include "print_number.h"
 #include "button.h"
-
+#include <stdio.h>
 extern SDL_Renderer* main_renderer;
 extern int SCREEN_WIDTH;
 extern int SCREEN_HEIGHT;
@@ -21,6 +21,14 @@ int x_size;
 int y_size;
 int minecount;
 
+void game_deinit();
+void game_deinit(){
+	SDL_DestroyTexture(tile_texture);
+	SDL_DestroyTexture(number_texture);
+	
+	
+}
+
 int init_game(){
   SDL_SetRenderDrawColor( main_renderer, 0xF0, 0xF0, 0xF0, 0xFF );
 	SDL_RenderClear( main_renderer );
@@ -33,6 +41,7 @@ int init_game(){
   tile_texture  = SDL_CreateTextureFromSurface( main_renderer, IMG_Load("skin.bmp"));
   number_texture  = SDL_CreateTextureFromSurface( main_renderer, IMG_Load("font.bmp"));
   bg_texture  = SDL_CreateTextureFromSurface( main_renderer, IMG_Load("background.bmp"));
+	
   if(tile_texture == NULL)
     fprintf(out, "TEXTURE MISSING\n");
   return 0;
@@ -49,8 +58,8 @@ int victory(){
   SDL_Rect score_poss = {SCREEN_WIDTH/2-500/2, SCREEN_HEIGHT/2+42, 500, 100};
   SDL_RenderCopy(main_renderer, score,NULL, &score_poss);
   
-  button new_game( {SCREEN_WIDTH/2-640/2,SCREEN_HEIGHT/2+142, 300, 100},{0,0,300,100}, 1);
-  button main_menu( {SCREEN_WIDTH/2-640/2+340,SCREEN_HEIGHT/2+142, 300, 100}, {0,400,300,100}, 4);
+  button new_game( {-170,200, 300, 100},{0,0,300,100}, 1);
+  button main_menu( {170,200, 300, 100}, {0,400,300,100}, 4);
   
   /*SDL_Rect ahoj = {SCREEN_WIDTH/2-640/2,SCREEN_HEIGHT/2+142, 300, 100};
   SDL_Rect ahoj2 = {0,0,300,100};
@@ -68,8 +77,9 @@ int victory(){
       if( event.type == SDL_QUIT ){
         die2 = true;
       }
-      new_game.handle_mouse(event);
-      main_menu.handle_mouse(event);
+			int retval;
+      if((retval = new_game.handle_mouse(event)))return retval;
+      if((retval = main_menu.handle_mouse(event)))return retval;
     }
     SDL_RenderPresent( main_renderer );
     SDL_Delay(10);
@@ -80,8 +90,10 @@ int victory(){
 int new_game(){
   init_game();
   minefield field(x_size, y_size, minecount);
-  field.render();
-  
+	SDL_RenderClear(main_renderer);
+  field.refresh();
+	
+  SDL_RenderPresent( main_renderer );
   SDL_Event event;
   bool die = false;
   while( !die ){
@@ -103,7 +115,7 @@ int new_game(){
     SDL_RenderPresent( main_renderer );
     SDL_Delay(10);
 	}
-  
+  game_deinit();
   
   return 0;
 }

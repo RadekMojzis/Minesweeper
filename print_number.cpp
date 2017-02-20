@@ -3,7 +3,7 @@
 #include <SDL_image.h>
 #include <iostream>
 #include "print_number.h"
-
+#include <stdio.h>
 SDL_Rect clips[26] = {
   {300, 50 , 50, 50}, //0
   {350, 50 , 50, 50}, //1

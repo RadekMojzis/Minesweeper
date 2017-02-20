@@ -7,7 +7,7 @@
 #include "options.h"
 #include "records.h"
 #include "menu.h"
-
+#include <stdio.h>
 //Global variables - also used as externs in other files
 
 SDL_Window* window = NULL;

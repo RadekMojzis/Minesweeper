@@ -1,6 +1,6 @@
 #include "SDL.h"
 #include <string.h>
-
+#include <stdio.h>
 extern void InitVideo();
 extern void Redraw();
 

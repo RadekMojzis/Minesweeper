@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <iostream>
-
+#include <stdio.h>
 extern SDL_Renderer* main_renderer;
 extern SDL_Texture* button_textures;
 extern int SCREEN_WIDTH;
