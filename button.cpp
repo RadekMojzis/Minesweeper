@@ -71,7 +71,7 @@ void button::changestate(int newstate){
 
 void button::identify(int number){
   
-  fprintf(out, "Identifying as %i.\nReturning with %i..\n", func_number, number);
+  //fprintf(out, "Identifying as %i.\nReturning with %i..\n", func_number, number);
 }
 
 button::button(SDL_Rect poss, SDL_Rect clip, int foo){

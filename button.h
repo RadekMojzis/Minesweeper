@@ -8,6 +8,8 @@
 const int M_HOVER = 0;
 const int M_OUT = 1;
 const int M_DOWN = 2;
+const int M_FALSE = 3;
+
 
 class button{
   private:

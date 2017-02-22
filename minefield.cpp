@@ -54,7 +54,7 @@ int lossflag = 0;
 void mine_tile::reveal(){
   if(revealedflag)
     return;
-  if(flagflag)
+  if(flagflag && !lossflag)
     return;
   revealedflag = true;
   if(mineflag){
@@ -71,6 +71,11 @@ void mine_tile::reveal(){
 
 
 void mine_tile::change_state(int new_state){
+  if(new_state == M_FALSE){
+    clip = mineclip_array[14];
+    render();
+    return;
+  }
   if(revealedflag)
     return;
   if(new_state == M_HOVER){
@@ -100,6 +105,7 @@ void mine_tile::change_state(int new_state){
     clip = mineclip_array[1];
     render();
   }
+  
 }
 
 void mine_tile::adjust_position(SDL_Rect poss){
@@ -356,6 +362,33 @@ int minefield::refresh(){
 			tiles[i][j].change_state(M_OUT);
 }
 
+void minefield::reveal(){
+  for(int i = 0; i < tiles_x; i++){
+    for(int j =0; j < tiles_y; j++){
+      if(tiles[i][j].flagflag && !tiles[i][j].mineflag){
+        tiles[i][j].change_state(M_FALSE);
+      }
+      if(!tiles[i][j].flagflag && tiles[i][j].mineflag){
+        tiles[i][j].reveal();
+      }
+    }
+  }
+  lossflag = 0;
+  SDL_RenderPresent( main_renderer );
+  SDL_Event event;
+  bool stopflag = true;
+  while(stopflag){
+    if(SDL_PollEvent( &event )){
+      if(event.type == SDL_QUIT)
+        return;
+      if(event.type == SDL_MOUSEBUTTONUP)
+        stopflag = false;
+    }
+    SDL_Delay(50);
+  }
+  return;
+}
+
 int minefield::handle_mouse(SDL_Event event){
   switch (event.type)  {
     case SDL_WINDOWEVENT:  {
@@ -399,7 +432,12 @@ int minefield::handle_mouse(SDL_Event event){
 			&& event.motion.y >= position.y && event.motion.y <= position.y + position.h){
         if( event.button.button == SDL_BUTTON_RIGHT ){
           gettile(event);
+          if(!active->revealedflag){
+            flagcount += active->flagflag == 0 ? 1 : -1;
+            SDL_RenderPresent( main_renderer );
+          }
           active->toggle_flag();
+          
           if(lossflag) return 2;
           if(checkwin())return 1;
         }

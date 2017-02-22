@@ -39,6 +39,8 @@ int main(int argc, char *argv[]){
       func_number = options();
     if(func_number == 4)
       func_number = menu();
+    if(func_number == 5)
+      break;
   }
   Exit_game();
   

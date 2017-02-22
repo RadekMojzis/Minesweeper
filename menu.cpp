@@ -40,7 +40,7 @@ int display_menu(){
   existing_buttons[buttoncount++] = &RECORDS_BTN;
   button OPTIONS_BTN({0, spacing, 150, 50},{0,100,300,100}, 3);
   existing_buttons[buttoncount++] = &OPTIONS_BTN;
-  button QUIT_BTN({0, 2*spacing, 150, 50},{0,200,300,100}, 0);  
+  button QUIT_BTN({0, 2*spacing, 150, 50},{0,200,300,100}, 5);  
   existing_buttons[buttoncount++] = &QUIT_BTN;
   SDL_Event event;
 

@@ -38,11 +38,14 @@ class minefield{
     int tiles_y;
     int genflag = 0;
     void rescale();
-    int n_o_mines;
+    
     
   public:
+    int n_o_mines;
+    int flagcount = 0;
 	  int refresh();
     Timer gametime;
+    void reveal();
     void reveal_near(int x, int y);
     void oracle(int x, int y);
     void generate_mines(int count, int x, int y);

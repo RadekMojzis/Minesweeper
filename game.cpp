@@ -14,6 +14,8 @@ extern FILE* out;
 SDL_Texture *bg_texture = NULL;
 SDL_Texture *number_texture = NULL;
 SDL_Texture* tile_texture = NULL;
+SDL_Texture* clock_texture = NULL;
+SDL_Texture* mines_remaining = NULL;
 extern SDL_Texture* button_textures;
 
 
@@ -25,8 +27,6 @@ void game_deinit();
 void game_deinit(){
 	SDL_DestroyTexture(tile_texture);
 	SDL_DestroyTexture(number_texture);
-	
-	
 }
 
 int init_game(){
@@ -41,9 +41,46 @@ int init_game(){
   tile_texture  = SDL_CreateTextureFromSurface( main_renderer, IMG_Load("skin.bmp"));
   number_texture  = SDL_CreateTextureFromSurface( main_renderer, IMG_Load("font.bmp"));
   bg_texture  = SDL_CreateTextureFromSurface( main_renderer, IMG_Load("background.bmp"));
-	
+	clock_texture = SDL_CreateTextureFromSurface( main_renderer, IMG_Load("clock.bmp"));
+  mines_remaining = SDL_CreateTextureFromSurface( main_renderer, IMG_Load("minecounter.bmp"));
+  
+  
   if(tile_texture == NULL)
     fprintf(out, "TEXTURE MISSING\n");
+  return 0;
+}
+
+int defeet(){
+  SDL_Event event;
+  SDL_Texture* nuke  = SDL_CreateTextureFromSurface( main_renderer, IMG_Load("boom.bmp"));
+  SDL_Texture* score  = SDL_CreateTextureFromSurface( main_renderer, IMG_Load("scoreboard.bmp"));
+  button_textures  = SDL_CreateTextureFromSurface( main_renderer, IMG_Load("menu.bmp"));
+  
+  SDL_Rect defeet_poss = {SCREEN_WIDTH/2-640/2, SCREEN_HEIGHT/2-300, 640, 480};
+  SDL_RenderCopy(main_renderer, nuke,NULL, &defeet_poss);
+  SDL_Rect score_poss = {SCREEN_WIDTH/2-500/2, SCREEN_HEIGHT/2+42, 500, 100};
+  SDL_RenderCopy(main_renderer, score,NULL, &score_poss);
+  
+  button new_game( {-170,200, 300, 100},{0,0,300,100}, 1);
+  button main_menu( {170,200, 300, 100}, {0,400,300,100}, 4);
+ 
+  new_game.render();
+  main_menu.render();
+  SDL_RenderPresent( main_renderer );
+  
+  bool die2 = false;
+  while(!die2){
+    while( SDL_PollEvent( &event ) != 0 ){
+      if( event.type == SDL_QUIT ){
+        die2 = true;
+      }
+			int retval;
+      if((retval = new_game.handle_mouse(event)))return retval;
+      if((retval = main_menu.handle_mouse(event)))return retval;
+    }
+    SDL_RenderPresent( main_renderer );
+    SDL_Delay(10);
+  }
   return 0;
 }
 
@@ -92,6 +129,7 @@ int new_game(){
   minefield field(x_size, y_size, minecount);
 	SDL_RenderClear(main_renderer);
   field.refresh();
+  
 	
   SDL_RenderPresent( main_renderer );
   SDL_Event event;
@@ -108,9 +146,16 @@ int new_game(){
         return victory();
       }
       if(retval == 2){
-        fprintf(out, "Loss!\n");
+        field.gametime.pause();
+        field.reveal();
+        return defeet();
       }
     }
+    SDL_Rect minecounter_poss = {0, 0, 210, 30};
+    SDL_RenderCopy(main_renderer, mines_remaining,NULL, &minecounter_poss);
+    make_number(field.n_o_mines-field.flagcount,215, 0, 30);
+    SDL_Rect clock_poss = {SCREEN_WIDTH/2-260, 0, 30, 30};
+    SDL_RenderCopy(main_renderer, clock_texture,NULL, &clock_poss);
     maketime(field.gametime.get_ticks()/1000, SCREEN_WIDTH/2-200, 0, 30);
     SDL_RenderPresent( main_renderer );
     SDL_Delay(10);
