@@ -7,6 +7,7 @@
 #include "print_number.h"
 #include "button.h"
 #include <stdio.h>
+
 extern SDL_Renderer* main_renderer;
 extern int SCREEN_WIDTH;
 extern int SCREEN_HEIGHT;

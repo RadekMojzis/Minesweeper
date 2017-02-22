@@ -7,7 +7,6 @@
 #include "timer.h"
 #include "button.h"
 
-
 class mine_tile{
   private:
     SDL_Rect position;
@@ -21,6 +20,7 @@ class mine_tile{
     
     int mines_around = 0;
     void reveal();
+    //void bot_reveal();
     void toggle_flag();
     void set_tile(SDL_Rect poss);
     void adjust_position(SDL_Rect new_poss);
@@ -39,7 +39,6 @@ class minefield{
     int genflag = 0;
     void rescale();
     
-    
   public:
     int n_o_mines;
     int flagcount = 0;
@@ -47,7 +46,9 @@ class minefield{
     Timer gametime;
     void reveal();
     void reveal_near(int x, int y);
+    //void bot_reveal_near(int x, int y);
     void oracle(int x, int y);
+    //void bot_oracle(int x, int y);
     void generate_mines(int count, int x, int y);
 	  int handle_mouse(SDL_Event event);
     void adjust_position();

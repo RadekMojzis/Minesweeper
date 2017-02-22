@@ -4,7 +4,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "bot.h"
 SDL_Rect mineclip_array[15] = {
     //this part is for the skin.png
   {0, 0, 38, 38},  //hover
@@ -67,8 +67,11 @@ void mine_tile::reveal(){
   clip = mines_around ? mineclip_array[mines_around+3] : mineclip_array[M_DOWN];
   render();
 }
-
-
+/*
+void mine_tile::bot_reveal(){
+  revealedflag = true;
+}
+*/
 
 void mine_tile::change_state(int new_state){
   if(new_state == M_FALSE){
@@ -290,7 +293,102 @@ void minefield::oracle(int x, int y){
   }
   return;
 }
+/*
+void minefield::bot_oracle(int x, int y){
+  if(x < 0 || y < 0 || x >= tiles_x || y >= tiles_y)
+    return;
+  if(tiles[x][y].flagflag)
+    return;
+  if(tiles[x][y].revealedflag)
+    return;
+  if(tiles[x][y].mines_around){
+    tiles[x][y].bot_reveal();
+    return;
+  }
+  if(tiles[x][y].mines_around == 0){
+    if(tiles[x][y].mineflag){return;}
+    tiles[x][y].bot_reveal();
+    if(x > 0 && y > 0)                bot_oracle(x-1, y -1);
+    if(y > 0)                         bot_oracle(x, y -1);
+    if(x < tiles_x-1 && y > 0)        bot_oracle(x+1, y -1);
 
+    if(x > 0)                         bot_oracle(x -1, y);
+    if(x < tiles_x-1)                 bot_oracle(x +1, y);
+
+    if(x > 0 && y < tiles_y-1)        bot_oracle(x-1, y+1);
+    if(y < tiles_y-1)                 bot_oracle(x, y+1);
+    if(x < tiles_x-1 && y < tiles_y-1)bot_oracle(x+1, y+1);
+  }
+  return;
+}
+*/
+/*
+void minefield::bot_reveal_near(int x, int y){
+  if(x < 0 || y < 0 || x >= tiles_x || y >= tiles_y)
+    return;
+
+  int adj_flags = 0;
+  if(x > 0 && y > 0 && tiles[x-1][y-1].flagflag)                  adj_flags++;
+  if(y > 0 && tiles[x][y-1].flagflag)                             adj_flags++;
+  if(x < tiles_x-1 && y > 0 && tiles[x+1][y-1].flagflag)          adj_flags++;
+
+  if(x > 0 && tiles[x-1][y].flagflag)                             adj_flags++;
+  if(x < tiles_x-1 && tiles[x+1][y].flagflag)                     adj_flags++;
+
+  if(x > 0 && y < tiles_y-1 && tiles[x-1][y+1].flagflag)          adj_flags++;
+  if(y < tiles_y-1 && tiles[x][y+1].flagflag)                     adj_flags++;
+  if(x < tiles_x-1 && y < tiles_y-1 && tiles[x+1][y+1].flagflag)  adj_flags++;
+
+  if(adj_flags != tiles[x][y].mines_around)
+    return;
+
+  if(!tiles[x][y].revealedflag)
+    return;
+  if(x > 0 && y > 0){
+    if(tiles[x-1][y-1].mines_around == 0){
+      bot_oracle(x-1, y-1);}
+    else{ tiles[x-1][y-1].bot_reveal();}
+  }
+  if(y > 0){
+    if(tiles[x][y-1].mines_around == 0){
+      bot_oracle(x, y-1);}
+    else{tiles[x][y-1].bot_reveal();}
+  }
+
+  if(x < tiles_x-1 && y > 0) {
+    if(tiles[x+1][y-1].mines_around == 0){
+      bot_oracle(x+1, y-1);}
+    else{tiles[x+1][y-1].bot_reveal();}
+  }
+
+  if(x > 0) {
+    if(tiles[x-1][y].mines_around == 0){
+      bot_oracle(x-1, y);}
+    else{tiles[x-1][y].bot_reveal();}
+  }
+  if(x < tiles_x-1){
+    if(tiles[x+1][y].mines_around == 0){
+      bot_oracle(x+1, y);}
+    else{tiles[x+1][y].bot_reveal();}
+  }
+
+  if(x > 0 && y < tiles_y-1){
+    if(tiles[x-1][y+1].mines_around == 0){
+      bot_oracle(x-1, y+1);}
+    else{tiles[x-1][y+1].bot_reveal();}
+  }
+  if(y < tiles_y-1){
+    if(tiles[x][y+1].mines_around == 0){
+      bot_oracle(x, y+1);}
+    else{tiles[x][y+1].bot_reveal();}
+  }
+  if(x < tiles_x-1 && y < tiles_y-1){
+    if(tiles[x+1][y+1].mines_around == 0){
+      bot_oracle(x+1, y+1);}
+    else{tiles[x+1][y+1].bot_reveal();}
+  }
+}
+*/
 void minefield::reveal_near(int x, int y){
   if(x < 0 || y < 0 || x >= tiles_x || y >= tiles_y)
     return;
@@ -356,6 +454,7 @@ void minefield::reveal_near(int x, int y){
     else{tiles[x+1][y+1].reveal();}
   }
 }
+
 int minefield::refresh(){
 	for(int i = 0; i < tiles_x; i++)
 		for(int j = 0; j < tiles_y; j++)
@@ -468,6 +567,9 @@ int minefield::handle_mouse(SDL_Event event){
            }
         }
       }
+      //else{
+        //use_bot(*this);
+      //}
       break;
     }
   }

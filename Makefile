@@ -50,9 +50,13 @@ menu.o: menu.cpp
   
 options.o: options.cpp
 	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $^ -c
+  
+bot.o: bot.cpp
+	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $^ -c
+  
 
-sweeper: sweeper.o button.o menu.o records.o game.o options.o minefield.o timer.o print_number.o
-	$(CC) sweeper.o button.o menu.o records.o game.o options.o minefield.o timer.o print_number.o $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $@
+sweeper: sweeper.o button.o menu.o records.o game.o options.o minefield.o timer.o print_number.o bot.o
+	$(CC) sweeper.o button.o menu.o records.o game.o options.o minefield.o timer.o print_number.o bot.o $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $@
   
 clean:
 	del *.o
