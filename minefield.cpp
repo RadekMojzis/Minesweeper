@@ -28,6 +28,8 @@ SDL_Rect mineclip_array[15] = {
   //this is for font
 };
 
+extern int byuser;
+
 int current_tilesize = 38;
 
 extern SDL_Texture* tile_texture;
@@ -52,14 +54,15 @@ void mine_tile::set_tile(SDL_Rect poss){
 int lossflag = 0;
 
 void mine_tile::reveal(){
-  if(revealedflag)
+  if(danger)
+		return;
+	if(revealedflag)
     return;
   if(flagflag && !lossflag)
     return;
   revealedflag = true;
   if(mineflag){
     clip = mineclip_array[3];
-    revealedflag = true;
     render();
     lossflag = 1;
     return;
@@ -210,7 +213,7 @@ void minefield::generate_mines(int count, int x, int y){
   while( mines < count){
     for(int i = 0; i < tiles_x; i++){
       for(int j = 0; j < tiles_y; j++){
-        if(((rand() % 250) == 0) && !tiles[i][j].mineflag && !tiles[i][j].starting_ground){
+        if(((rand() % tiles_x*tiles_y) == 0) && !tiles[i][j].mineflag && !tiles[i][j].starting_ground){
           if(mines == count)
             break;
           tiles[i][j].mineflag = 1; 
@@ -267,12 +270,16 @@ bool minefield::checkwin(){
 }
 
 void minefield::oracle(int x, int y){
-  if(x < 0 || y < 0 || x >= tiles_x || y >= tiles_y)
+  fprintf(out, "Oracle - 1\n");
+	fflush(out);
+	if(x < 0 || y < 0 || x >= tiles_x || y >= tiles_y)
     return;
   if(tiles[x][y].flagflag)
     return;
   if(tiles[x][y].revealedflag)
     return;
+	if(tiles[x][y].danger)
+		return;
   if(tiles[x][y].mines_around){
     tiles[x][y].reveal();
     return;
@@ -291,104 +298,9 @@ void minefield::oracle(int x, int y){
     if(y < tiles_y-1)                 oracle(x, y+1);
     if(x < tiles_x-1 && y < tiles_y-1)oracle(x+1, y+1);
   }
+	fprintf(out, "Oracle - end\n");
   return;
 }
-/*
-void minefield::bot_oracle(int x, int y){
-  if(x < 0 || y < 0 || x >= tiles_x || y >= tiles_y)
-    return;
-  if(tiles[x][y].flagflag)
-    return;
-  if(tiles[x][y].revealedflag)
-    return;
-  if(tiles[x][y].mines_around){
-    tiles[x][y].bot_reveal();
-    return;
-  }
-  if(tiles[x][y].mines_around == 0){
-    if(tiles[x][y].mineflag){return;}
-    tiles[x][y].bot_reveal();
-    if(x > 0 && y > 0)                bot_oracle(x-1, y -1);
-    if(y > 0)                         bot_oracle(x, y -1);
-    if(x < tiles_x-1 && y > 0)        bot_oracle(x+1, y -1);
-
-    if(x > 0)                         bot_oracle(x -1, y);
-    if(x < tiles_x-1)                 bot_oracle(x +1, y);
-
-    if(x > 0 && y < tiles_y-1)        bot_oracle(x-1, y+1);
-    if(y < tiles_y-1)                 bot_oracle(x, y+1);
-    if(x < tiles_x-1 && y < tiles_y-1)bot_oracle(x+1, y+1);
-  }
-  return;
-}
-*/
-/*
-void minefield::bot_reveal_near(int x, int y){
-  if(x < 0 || y < 0 || x >= tiles_x || y >= tiles_y)
-    return;
-
-  int adj_flags = 0;
-  if(x > 0 && y > 0 && tiles[x-1][y-1].flagflag)                  adj_flags++;
-  if(y > 0 && tiles[x][y-1].flagflag)                             adj_flags++;
-  if(x < tiles_x-1 && y > 0 && tiles[x+1][y-1].flagflag)          adj_flags++;
-
-  if(x > 0 && tiles[x-1][y].flagflag)                             adj_flags++;
-  if(x < tiles_x-1 && tiles[x+1][y].flagflag)                     adj_flags++;
-
-  if(x > 0 && y < tiles_y-1 && tiles[x-1][y+1].flagflag)          adj_flags++;
-  if(y < tiles_y-1 && tiles[x][y+1].flagflag)                     adj_flags++;
-  if(x < tiles_x-1 && y < tiles_y-1 && tiles[x+1][y+1].flagflag)  adj_flags++;
-
-  if(adj_flags != tiles[x][y].mines_around)
-    return;
-
-  if(!tiles[x][y].revealedflag)
-    return;
-  if(x > 0 && y > 0){
-    if(tiles[x-1][y-1].mines_around == 0){
-      bot_oracle(x-1, y-1);}
-    else{ tiles[x-1][y-1].bot_reveal();}
-  }
-  if(y > 0){
-    if(tiles[x][y-1].mines_around == 0){
-      bot_oracle(x, y-1);}
-    else{tiles[x][y-1].bot_reveal();}
-  }
-
-  if(x < tiles_x-1 && y > 0) {
-    if(tiles[x+1][y-1].mines_around == 0){
-      bot_oracle(x+1, y-1);}
-    else{tiles[x+1][y-1].bot_reveal();}
-  }
-
-  if(x > 0) {
-    if(tiles[x-1][y].mines_around == 0){
-      bot_oracle(x-1, y);}
-    else{tiles[x-1][y].bot_reveal();}
-  }
-  if(x < tiles_x-1){
-    if(tiles[x+1][y].mines_around == 0){
-      bot_oracle(x+1, y);}
-    else{tiles[x+1][y].bot_reveal();}
-  }
-
-  if(x > 0 && y < tiles_y-1){
-    if(tiles[x-1][y+1].mines_around == 0){
-      bot_oracle(x-1, y+1);}
-    else{tiles[x-1][y+1].bot_reveal();}
-  }
-  if(y < tiles_y-1){
-    if(tiles[x][y+1].mines_around == 0){
-      bot_oracle(x, y+1);}
-    else{tiles[x][y+1].bot_reveal();}
-  }
-  if(x < tiles_x-1 && y < tiles_y-1){
-    if(tiles[x+1][y+1].mines_around == 0){
-      bot_oracle(x+1, y+1);}
-    else{tiles[x+1][y+1].bot_reveal();}
-  }
-}
-*/
 void minefield::reveal_near(int x, int y){
   if(x < 0 || y < 0 || x >= tiles_x || y >= tiles_y)
     return;
@@ -405,54 +317,72 @@ void minefield::reveal_near(int x, int y){
   if(y < tiles_y-1 && tiles[x][y+1].flagflag)                     adj_flags++;
   if(x < tiles_x-1 && y < tiles_y-1 && tiles[x+1][y+1].flagflag)  adj_flags++;
 
-  if(adj_flags != tiles[x][y].mines_around)
-    return;
-
+	if(byuser)
+		if(adj_flags != tiles[x][y].mines_around)
+			return;
+  fprintf(out, "got here...1\n");
+	fflush(out);
   if(!tiles[x][y].revealedflag)
     return;
+	fprintf(out, "got here...2\n");
+	fflush(out);
   if(x > 0 && y > 0){
     if(tiles[x-1][y-1].mines_around == 0){
       oracle(x-1, y-1);}
     else{ tiles[x-1][y-1].reveal();}
   }
+	fprintf(out, "got here...3\n");
+	fflush(out);
   if(y > 0){
     if(tiles[x][y-1].mines_around == 0){
       oracle(x, y-1);}
     else{tiles[x][y-1].reveal();}
   }
-
+  fprintf(out, "got here...4\n");
+	fflush(out);
   if(x < tiles_x-1 && y > 0) {
     if(tiles[x+1][y-1].mines_around == 0){
       oracle(x+1, y-1);}
     else{tiles[x+1][y-1].reveal();}
   }
-
+  fprintf(out, "got here...5\n");
+	fflush(out);
   if(x > 0) {
     if(tiles[x-1][y].mines_around == 0){
       oracle(x-1, y);}
     else{tiles[x-1][y].reveal();}
   }
+	fprintf(out, "got here...6\n");
+	fflush(out);
   if(x < tiles_x-1){
     if(tiles[x+1][y].mines_around == 0){
       oracle(x+1, y);}
     else{tiles[x+1][y].reveal();}
   }
-
+  fprintf(out, "got here...7\n");
+	fflush(out);
   if(x > 0 && y < tiles_y-1){
     if(tiles[x-1][y+1].mines_around == 0){
       oracle(x-1, y+1);}
     else{tiles[x-1][y+1].reveal();}
   }
+	fprintf(out, "got here...8\n");
+	fflush(out);
   if(y < tiles_y-1){
     if(tiles[x][y+1].mines_around == 0){
       oracle(x, y+1);}
     else{tiles[x][y+1].reveal();}
   }
+  fprintf(out, "got here...9\n");
+	fflush(out);
+
   if(x < tiles_x-1 && y < tiles_y-1){
     if(tiles[x+1][y+1].mines_around == 0){
       oracle(x+1, y+1);}
     else{tiles[x+1][y+1].reveal();}
   }
+	fprintf(out, "got here...10\n");
+	fflush(out);
 }
 
 int minefield::refresh(){

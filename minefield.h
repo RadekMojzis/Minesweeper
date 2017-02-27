@@ -17,6 +17,7 @@ class mine_tile{
     int mineflag = 0;
     int flagflag = 0;
     int revealedflag = 0;
+		int danger = 0;
     
     int mines_around = 0;
     void reveal();
@@ -58,6 +59,7 @@ class minefield{
     friend int n_o_adjucent_flags(minefield * field, int i, int j);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     friend void eval_danger(minefield *field, int mines, int out_of);
 		friend void set_danger(minefield *field, int i, int j);
 		
@@ -68,6 +70,11 @@ class minefield{
 =======
     
 >>>>>>> refs/remotes/origin/master
+=======
+    friend void eval_danger(minefield *field, int mines, int out_of);
+		friend void set_danger(minefield *field, int i, int j);
+		
+>>>>>>> 71891a4... Revert "Revert "11""
     int n_o_mines;
     int flagcount = 0;
 	  int refresh();
