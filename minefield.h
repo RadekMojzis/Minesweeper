@@ -17,6 +17,7 @@ class mine_tile{
     int mineflag = 0;
     int flagflag = 0;
     int revealedflag = 0;
+		int danger = 0;
     
     int mines_around = 0;
     void reveal();
@@ -36,10 +37,22 @@ class minefield{
     mine_tile** tiles;
     int tiles_x;
     int tiles_y;
+<<<<<<< HEAD
     int genflag = 0;
     void rescale();
     
   public:
+=======
+    mine_tile** tiles;
+  public:
+    friend void use_bot(minefield* field);
+    friend int put_flags_around(minefield * field, int i, int j);
+    friend int n_o_unrevealed_tiles(minefield * field, int i, int j);
+    friend int n_o_adjucent_flags(minefield * field, int i, int j);
+    friend void eval_danger(minefield *field, int mines, int out_of);
+		friend void set_danger(minefield *field, int i, int j);
+		
+>>>>>>> 828cf3f... 11
     int n_o_mines;
     int flagcount = 0;
 	  int refresh();
