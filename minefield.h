@@ -33,21 +33,30 @@ class mine_tile{
 class minefield{
   private:
     SDL_Rect position;
+<<<<<<< HEAD
     mine_tile** tiles;
     int tiles_x;
     int tiles_y;
 <<<<<<< HEAD
+=======
+>>>>>>> refs/remotes/origin/master
     int genflag = 0;
     void rescale();
-    
+    int tiles_x;
+    int tiles_y;
+    mine_tile** tiles;
   public:
+<<<<<<< HEAD
 =======
     mine_tile** tiles;
   public:
+=======
+>>>>>>> refs/remotes/origin/master
     friend void use_bot(minefield* field);
     friend int put_flags_around(minefield * field, int i, int j);
     friend int n_o_unrevealed_tiles(minefield * field, int i, int j);
     friend int n_o_adjucent_flags(minefield * field, int i, int j);
+<<<<<<< HEAD
 <<<<<<< HEAD
     friend void eval_danger(minefield *field, int mines, int out_of);
 		friend void set_danger(minefield *field, int i, int j);
@@ -56,6 +65,9 @@ class minefield{
 =======
     
 >>>>>>> f85ec1d... Revert "11"
+=======
+    
+>>>>>>> refs/remotes/origin/master
     int n_o_mines;
     int flagcount = 0;
 	  int refresh();

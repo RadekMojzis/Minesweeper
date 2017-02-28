@@ -567,9 +567,9 @@ int minefield::handle_mouse(SDL_Event event){
            }
         }
       }
-      //else{
-        //use_bot(*this);
-      //}
+      else{
+        use_bot(this);
+      }
       break;
     }
   }
