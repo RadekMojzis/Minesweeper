@@ -17,7 +17,7 @@ COMPILER_FLAGS = -w -Wl,-subsystem,windows
 SDL_LIBS = sdl-config --libs
 
 #LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS = -lmingw32  -lSDL2main -lSDL2 -lopengl32 -lglu32 -lSDL2_image -static-libgcc
+LINKER_FLAGS = -lmingw32  -lSDL2main -lSDL2 -lopengl32 -lglu32 -lSDL2_image
 
 #OBJ_NAME specifies the name of our exectuable
 

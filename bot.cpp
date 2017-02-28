@@ -2,6 +2,7 @@
 #include "bot.h"
 #include "minefield.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 bool is_solvable(minefield* cosi, int start_x, int start_y);
 
@@ -22,68 +23,58 @@ coordinates put_flags(minefield *cosi){
 #include <stdio.h>
 extern SDL_Renderer* main_renderer;
 int byuser = 1;
+=======
+
+>>>>>>> f85ec1d... Revert "11"
 bool is_solvable(minefield* field, int start_x, int start_y);
-extern FILE *out;
-int changeflag = 0;
+extern FILE* out;
 void use_bot(minefield* field){
-	changeflag = 0;
   for(int i = 0; i < field->tiles_x; i++)
     for(int j = 0; j < field->tiles_y; j++){
       if(field->tiles[i][j].revealedflag){
-				if(field->tiles[i][j].mines_around){
-					if(n_o_adjucent_flags(field, i, j) == field->tiles[i][j].mines_around){  
-						if(n_o_unrevealed_tiles(field, i, j) != 0){
-							byuser = 0;
-							field->reveal_near(i, j);
-							byuser = 1;
-							changeflag = 1;
-						}
-					}
-					else if(field->tiles[i][j].mines_around == (n_o_unrevealed_tiles(field, i, j) + n_o_adjucent_flags(field, i, j))){
-						put_flags_around(field, i, j);
-						//fprintf(out, "Log - [%i][%i] - setting flags\n", i+1, j+1);
-						changeflag = 1;
-					}	
+        if(field->tiles[i][j].mines_around){
+          if(n_o_adjucent_flags(field, i, j) == field->tiles[i][j].mines_around){
+            field->reveal_near(i, j);
+          }
+          else{
+            fprintf(out, "LOG - tile [%i][%i] - Mines %i - Unrevealed %i - Flags %i - \n", i+1, j+1, field->tiles[i][j].mines_around, n_o_unrevealed_tiles(field, i, j), n_o_adjucent_flags(field, i, j));
+            if(field->tiles[i][j].mines_around == (n_o_unrevealed_tiles(field, i, j) + n_o_adjucent_flags(field, i, j))){
+              put_flags_around(field, i, j);
+            }
+          }
         }
-			}
+      }
     }
-
-  if(!changeflag){
-		for(int i = 0; i < field->tiles_x; i++){
-      for(int j = 0; j < field->tiles_y; j++){
-		    set_danger(field, i, j);
-			}
-		}
-	}
+  
   return;
 }
 
 int put_flags_around(minefield * field, int i, int j){
+  fprintf(out, "puting flags around [%i][%i]\n", i, j);
+  if(i > 0 && j > 0 && !field->tiles[i-1][j-1].flagflag)                                field->tiles[i-1][j-1].toggle_flag();
+  if(j > 0 && !field->tiles[i][j-1].flagflag)                                           field->tiles[i][j-1].toggle_flag();
+  if(i < field->tiles_x-1 && j > 0 && !field->tiles[i+1][j-1].flagflag)                 field->tiles[i+1][j-1].toggle_flag();
 
-  if(i > 0 && j > 0 && !field->tiles[i-1][j-1].flagflag && !field->tiles[i-1][j-1].danger)                                field->tiles[i-1][j-1].toggle_flag();
-  if(j > 0 && !field->tiles[i][j-1].flagflag && !field->tiles[i][j-1].danger)                                             field->tiles[i][j-1].toggle_flag();
-  if(i < field->tiles_x-1 && j > 0 && !field->tiles[i+1][j-1].flagflag && !field->tiles[i+1][j-1].danger)                 field->tiles[i+1][j-1].toggle_flag();
+  if(i > 0 && !field->tiles[i-1][j].flagflag)                                           field->tiles[i-1][j].toggle_flag();
+  if(i < field->tiles_x-1 && !field->tiles[i+1][j].flagflag)                            field->tiles[i+1][j].toggle_flag();
 
-  if(i > 0 && !field->tiles[i-1][j].flagflag && !field->tiles[i-1][j].danger)                                             field->tiles[i-1][j].toggle_flag();
-  if(i < field->tiles_x-1 && !field->tiles[i+1][j].flagflag && !field->tiles[i+1][j].danger)                              field->tiles[i+1][j].toggle_flag();
-
-  if(i > 0 && j < field->tiles_y-1 && !field->tiles[i-1][j+1].flagflag && !field->tiles[i-1][j+1].danger)                 field->tiles[i-1][j+1].toggle_flag();
-  if(j < field->tiles_y-1 && !field->tiles[i][j+1].flagflag&& !field->tiles[i][j+1].danger)                               field->tiles[i][j+1].toggle_flag();
-  if(i < field->tiles_x-1 && j < field->tiles_y-1 && !field->tiles[i+1][j+1].flagflag && !field->tiles[i+1][j+1].danger)  field->tiles[i+1][j+1].toggle_flag();
+  if(i > 0 && j < field->tiles_y-1 && !field->tiles[i-1][j+1].flagflag)                 field->tiles[i-1][j+1].toggle_flag();
+  if(j < field->tiles_y-1 && !field->tiles[i][j+1].flagflag)                            field->tiles[i][j+1].toggle_flag();
+  if(i < field->tiles_x-1 && j < field->tiles_y-1 && !field->tiles[i+1][j+1].flagflag)  field->tiles[i+1][j+1].toggle_flag();
 }
 
 int n_o_unrevealed_tiles(minefield * field, int i, int j){
   int unrevealed_tiles = 0;
-  if(i > 0 && j > 0 && (!field->tiles[i-1][j-1].revealedflag && !field->tiles[i-1][j-1].flagflag && !field->tiles[i-1][j-1].danger))                                unrevealed_tiles++;
-  if(j > 0 && (!field->tiles[i][j-1].revealedflag && !field->tiles[i][j-1].flagflag && !field->tiles[i][j-1].danger))                                               unrevealed_tiles++;
-  if(i < field->tiles_x-1 && j > 0 && (!field->tiles[i+1][j-1].revealedflag && !field->tiles[i+1][j-1].flagflag && !field->tiles[i+1][j-1].danger))                 unrevealed_tiles++;
+  if(i > 0 && j > 0 && (!field->tiles[i-1][j-1].revealedflag && !field->tiles[i-1][j-1].flagflag))                                unrevealed_tiles++;
+  if(j > 0 && (!field->tiles[i][j-1].revealedflag && !field->tiles[i][j-1].flagflag))                                             unrevealed_tiles++;
+  if(i < field->tiles_x-1 && j > 0 && (!field->tiles[i+1][j-1].revealedflag && !field->tiles[i+1][j-1].flagflag))                 unrevealed_tiles++;
 
-  if(i > 0 && (!field->tiles[i-1][j].revealedflag && !field->tiles[i-1][j].flagflag && !field->tiles[i-1][j].danger))                                               unrevealed_tiles++;
-  if(i < field->tiles_x-1 && (!field->tiles[i+1][j].revealedflag && !field->tiles[i+1][j].flagflag && !field->tiles[i+1][j].danger) )                               unrevealed_tiles++;
+  if(i > 0 && (!field->tiles[i-1][j].revealedflag && !field->tiles[i-1][j].flagflag))                                             unrevealed_tiles++;
+  if(i < field->tiles_x-1 && (!field->tiles[i+1][j].revealedflag && !field->tiles[i+1][j].flagflag) )                             unrevealed_tiles++;
 
-  if(i > 0 && j < field->tiles_y-1 && (!field->tiles[i-1][j+1].revealedflag && !field->tiles[i-1][j+1].flagflag && !field->tiles[i-1][j+1].danger))                 unrevealed_tiles++;
-  if(j < field->tiles_y-1 && (!field->tiles[i][j+1].revealedflag && !field->tiles[i][j+1].flagflag && !field->tiles[i][j+1].danger))                                unrevealed_tiles++;
-  if(i < field->tiles_x-1 && j < field->tiles_y-1 && (!field->tiles[i+1][j+1].revealedflag && !field->tiles[i+1][j+1].flagflag && !field->tiles[i+1][j+1].danger))  unrevealed_tiles++;
+  if(i > 0 && j < field->tiles_y-1 && (!field->tiles[i-1][j+1].revealedflag && !field->tiles[i-1][j+1].flagflag))                 unrevealed_tiles++;
+  if(j < field->tiles_y-1 && (!field->tiles[i][j+1].revealedflag && !field->tiles[i][j+1].flagflag))                              unrevealed_tiles++;
+  if(i < field->tiles_x-1 && j < field->tiles_y-1 && (!field->tiles[i+1][j+1].revealedflag && !field->tiles[i+1][j+1].flagflag))  unrevealed_tiles++;
   return unrevealed_tiles;
 }
 
@@ -100,6 +91,7 @@ int n_o_adjucent_flags(minefield * field, int i, int j){
   if(j < field->tiles_y-1 && field->tiles[i][j+1].flagflag)                            adj_flags++;
   if(i < field->tiles_x-1 && j < field->tiles_y-1 && field->tiles[i+1][j+1].flagflag)  adj_flags++;
   return adj_flags;
+<<<<<<< HEAD
 }
 
 
@@ -190,3 +182,6 @@ void eval_danger(minefield *field, int mines, int out_of){
 }
 
 >>>>>>> 828cf3f... 11
+=======
+}
+>>>>>>> f85ec1d... Revert "11"
