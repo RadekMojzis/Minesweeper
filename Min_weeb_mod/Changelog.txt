@@ -1,0 +1,31 @@
+v1.0
+-First draft of skin
+-stole angelsim's hitsounds
+
+v1.1
+-added a blank pause-loop.wav
+-changed fail-bakground: removed background (element still WIP)
+-extended ranking-panel
+-fixed pause-back/continue/retry/replay to not be stupidly small (approx 2x original size)
+-fixed selection-fail and selection-pass graphic errors
+-input-overlay is now a blank image file
+-ranking-graph made to match the style of ranking-panel
+-reajusted ranking-perfect to be further down the graph
+-reclipped seeya.wav
+-reclipped failsound.wav
+-redesigned menu-button-background
+-redesigned pause-overlay
+-redesigned section-pass
+-redesigned selection-mode (didn't notice this was the same picture as spinner-metre lol)
+-removed picture from ranking-graph
+-rotated mod icons -30 degrees for improved readability on scores and spectating
+-stole triumph's cursor (color shifted to be yellow instead of green)
+
+v1.2
+-redesigned menu-back
+-redesigned play-skip
+-redesigned spinner-circle
+-redesigned star
+-redesigned various rankings (new border, some new pictures)
+-mod iconds are now rotate -20 degrees instead of -30
+-HD REMAKE!
