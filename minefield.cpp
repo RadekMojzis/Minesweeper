@@ -216,6 +216,10 @@ void minefield::generate_mines(int count, int x, int y){
         if(((rand() % tiles_x*tiles_y) == 0) && !tiles[i][j].mineflag && !tiles[i][j].starting_ground){
           if(mines == count)
             break;
+					if((i < 2 || j < 2 || i > tiles_x-3 || j > tiles_y-3 ))
+						if(((rand()%3) != 0))
+							continue;
+	
           tiles[i][j].mineflag = 1; 
           mines++;
         }

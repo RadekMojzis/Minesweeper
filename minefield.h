@@ -39,7 +39,7 @@ class minefield{
     int tiles_y;
     int genflag = 0;
     void rescale();
-
+  
   public:
     friend void use_bot(minefield* field);
     friend int put_flags_around(minefield * field, int i, int j);
