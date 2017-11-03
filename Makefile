@@ -1,7 +1,7 @@
 all : sweeper clean
 
 #CC specifies which compiler we're using
-CC = g++ -std=c++14
+CC = g++ -std=c++0x
 
 #INCLUDE_PATHS specifies the additional include paths we'll need
 INCLUDE_PATHS = -IC:\mingw_dev_lib\include\SDL2
